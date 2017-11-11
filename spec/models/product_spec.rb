@@ -12,6 +12,10 @@ RSpec.describe Product, type: :model do
   end
 
   describe "validations" do
+    it "should pass with default values" do
+      expect(@product.valid?).to eq(true)
+    end
+
     it "Should require a name" do
       @product.name = nil
       expect(@product.valid?).to eq(false)
@@ -22,5 +26,4 @@ RSpec.describe Product, type: :model do
       expect(@product.valid?).to eq(false)
     end
   end
-
 end

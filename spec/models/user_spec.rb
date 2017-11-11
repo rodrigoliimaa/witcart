@@ -12,6 +12,10 @@ RSpec.describe User, type: :model do
     end
 
     describe "validations" do
+        it "should pass with default values" do
+            expect(@user.valid?).to eq(true)
+        end
+
         it "Should require a name" do
             @user.name = nil
             expect(@user.valid?).to eq(false)
