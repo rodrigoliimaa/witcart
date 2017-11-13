@@ -88,16 +88,59 @@ RSpec.describe CartService do
         end
     end
 
+    describe "System features" do
+        let(:cart_service) {CartService.new}
+        context "Listing products overral" do
+            it "Should return the products overral" do
+                expect(cart_service.products_overral_system).to_not be_nil
+            end
+        end
+
+        context "Checking total pending" do
+            it "Should return the correct total pending" do
+                cart = FactoryBot::build(:cart, user: FactoryBot::build(:user_joao))
+                product = FactoryBot::build(:product_learn_ror)
+                amount = 1
+
+                cart_service.add_item(cart, product, amount)
+
+                expect(cart_service.total_pending_system).to eq(product.price)
+            end
+        end
+
+        context "The cart expiration" do
+            it "The cart should expire after 2 days" do
+                Timecop.travel(2.days.ago)
+
+                cart = FactoryBot::build(:cart, user: FactoryBot::build(:user_joao))
+                product = FactoryBot::build(:product_learn_ror)
+                amount = 1
+
+                cart_service.add_item(cart, product, amount)
+                
+                Timecop.return
+
+                expect(cart.cart_items.size).to eq(0)
+            end
+        end
+    end
+
     # Specs for the wit test
-    describe 'Diogo is preparing a workshop and will buy some books' do
+    describe 'Wit Living Test' do
         before :each do
             @product_learn_ror = FactoryBot::build(:product_learn_ror)
             @product_mastering_ror = FactoryBot::build(:product_mastering_ror)
         end
         let(:cart_service) {CartService.new}
 
-        context "he will be adding some books into the cart" do
-            it "should add books and tell amount to pay" do
+        context "Diogo is preparing a workshop and will be offering 10 books of Learn Ror - Beginner, so Diogo will go to your 
+            awesome store and add this to his cart. To reward a special one that really was interested in RoR Diogo decided to offer 
+            him one Mastering RoR - Level over 9000, so he will add this to his cart. Because of uncertainty of the amount of attendees, 
+            Diogo leave his store as it is. After 1 day Diogo comes back and add more 2 books of Learn Ror - Beginner.
+            Joao also went to your store and he's interested in 2 copies of Mastering RoR - Level over 9000, so he added 
+            to his cart as well." do
+
+            it "should simulate" do
                 
                 ## Begin Diogo ##
 
