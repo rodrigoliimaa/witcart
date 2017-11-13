@@ -15,6 +15,18 @@ class CartService
         update_or_delete_cart_item(cart, product, amount)
     end
 
+    def total(cart)
+        cart.cart_items.sum(&:price)
+    end
+
+    def products_overral_system
+        CartItem.products_overral
+    end
+
+    def total_pending_system
+        CartItem.total_pending
+    end
+
     private
         def update_or_add_cart_item(cart, product, amount)
             cart_item = check_product_exists_in_card(cart, product)
