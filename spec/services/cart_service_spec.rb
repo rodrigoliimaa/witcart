@@ -153,7 +153,7 @@ RSpec.describe CartService do
                 # His cart
                 cart_diogo = FactoryBot::build(:cart, user: diogo)
 
-                # Adding books 10 books of Learn Ror - Beginner
+                # Adding 10 books of Learn Ror - Beginner
                 cart_service.add_item(cart_diogo, @product_learn_ror, 10)
 
                 # Adding book 1 Mastering RoR - Level over 900
@@ -163,7 +163,7 @@ RSpec.describe CartService do
                 Timecop.return
 
                 # Adding more 2 books of Learn Ror - Beginner
-                cart_service.add_item(cart_diogo, @product_learn_ror, 10)
+                cart_service.add_item(cart_diogo, @product_learn_ror, 2)
 
                 expect(cart_diogo.cart_items.size).to eq(2)
 
@@ -198,6 +198,39 @@ RSpec.describe CartService do
 
                 p "What is the total amount of money that you have pending on your system?"
                 p ActionController::Base.helpers.number_to_currency(cart_service.total_pending_system)
+            end
+        end
+
+
+        context "Special One" do
+            it "It Should validate pricing changing while item is in the cart" do
+                ## Begin Diogo ##
+
+                # Using timecop to simulate diogo's time
+                Timecop.travel(1.day.ago)
+
+                # User Diogo
+                diogo = FactoryBot::build(:user_diogo)
+
+                # His cart
+                cart_diogo = FactoryBot::build(:cart, user: diogo)
+
+                # Adding books 10 books of Learn Ror - Beginner
+                cart_service.add_item(cart_diogo, @product_learn_ror, 10)
+
+                # Adding book 1 Mastering RoR - Level over 900
+                cart_service.add_item(cart_diogo, @product_mastering_ror, 1)
+
+                ## The price changing ##
+                @product_learn_ror.update({price: 15.33})
+
+                # return to the current time
+                Timecop.return
+
+                # It will thrown an exception when Diogo's try to add more 2 books
+                # this validation can be done on the checkout too
+                # We can use this exception to warn diogo on the front end that the price has changed 
+                expect {cart_service.add_item(cart_diogo, @product_learn_ror, 2)}.to raise_error(CartError)
             end
         end
     end

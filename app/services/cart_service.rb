@@ -31,6 +31,7 @@ class CartService
         def update_or_add_cart_item(cart, product, amount)
             cart_item = check_product_exists_in_card(cart, product)
             if cart_item.present?
+                check_pricing_change(cart_item, product)
                 update_cart_item(cart_item, amount, CartItem::OPERATION[:add])
             else
                 CartItem.create({cart: cart, product: product, amount: amount})
@@ -53,16 +54,20 @@ class CartService
             cart_item.update({amount: new_amount})
         end
 
+        def check_pricing_change(cart_item, product)
+            current_price = product.price * cart_item.amount
+            raise CartError.new("Product price has changed") if current_price != cart_item.price
+        end
+
         def check_product_exists_in_card(cart, product)
             cart.get_cart_item_in_cart(product)
         end
 
         def check_product(product)
-            raise CartError.new("Invalid Product") if product.blank?
+            raise CartError.new("Invalid Product") if product.blank? 
         end
 
         def check_amount(amount)
             raise CartError.new("Invalid Amount") if amount <= 0
         end
-
 end
